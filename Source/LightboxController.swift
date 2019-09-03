@@ -1,4 +1,6 @@
 import UIKit
+import Photos
+import PhotosUI
 
 public protocol LightboxControllerPageDelegate: class {
 
@@ -105,6 +107,12 @@ open class LightboxController: UIViewController {
   open var numberOfPages: Int {
     return pageViews.count
   }
+    
+    open var canShowDownloadButton: Bool = true {
+        didSet {
+            checkDownloadCurrenImage()
+        }
+    }
 
   open var dynamicBackground: Bool = false {
     didSet {
@@ -214,6 +222,17 @@ open class LightboxController: UIViewController {
   open override var prefersStatusBarHidden: Bool {
     return LightboxConfig.hideStatusBar
   }
+    
+    func checkDownloadCurrenImage() {
+        if canShowDownloadButton == true {
+            let currentImage = initialImages[currentPage]
+            let showDownloadButton = !currentImage.isVideo()
+            headerView.showDownloadButton(isShow: showDownloadButton)
+        }
+        else {
+            headerView.showDownloadButton(isShow: false)
+        }
+    }
 
   // MARK: - Rotation
 
@@ -240,8 +259,6 @@ open class LightboxController: UIViewController {
       scrollView.addSubview(pageView)
       pageViews.append(pageView)
     }
-
-    configureLayout(view.bounds.size)
   }
 
   func reconfigurePagesForPreload() {
@@ -259,6 +276,8 @@ open class LightboxController: UIViewController {
         }
       }
     }
+    
+    checkDownloadCurrenImage()
   }
 
   // MARK: - Pagination
@@ -276,6 +295,9 @@ open class LightboxController: UIViewController {
     let shouldAnimated = view.window != nil ? animated : false
 
     scrollView.setContentOffset(offset, animated: shouldAnimated)
+    
+    configureLayout(view.bounds.size)
+    checkDownloadCurrenImage()
   }
 
   open func next(_ animated: Bool = true) {
@@ -375,6 +397,8 @@ extension LightboxController: UIScrollViewDelegate {
 
     targetContentOffset.pointee.x = x
     currentPage = Int(x / pageWidth)
+
+    checkDownloadCurrenImage()
   }
 }
 
@@ -383,6 +407,7 @@ extension LightboxController: UIScrollViewDelegate {
 extension LightboxController: PageViewDelegate {
 
   func remoteImageDidLoad(_ image: UIImage?, imageView: UIImageView) {
+    checkDownloadCurrenImage()
     guard let image = image, dynamicBackground else {
       return
     }
@@ -451,6 +476,62 @@ extension LightboxController: HeaderViewDelegate {
     dismissalDelegate?.lightboxControllerWillDismiss(self)
     dismiss(animated: true, completion: nil)
   }
+    
+    func headerView(_ headerView: HeaderView, didPressDownloadButton downloadButton: UIButton) {
+        print("Did tap download...")
+        DispatchQueue.global().async { [weak self] in
+            PHPhotoLibrary.requestAuthorization {(status) in
+                if status == .authorized {
+                    guard let currentImage = self?.images[self?.currentPage ?? 0] else { return }
+                    let yourImageURLString = currentImage.imageSrcUrl()
+                    
+                    guard let yourImageURL = URL(string: yourImageURLString) else { return }
+                    
+                    self?.getDataFromUrl(url: yourImageURL) { (data, response, error) in
+                        
+                        guard let data = data, let imageFromData = UIImage(data: data) else { return }
+                        
+                        DispatchQueue.main.async() { [weak self] in
+                            UIImageWriteToSavedPhotosAlbum(imageFromData, nil, nil, nil)
+                            
+                            let alert = UIAlertController(title: "Tải thành công", message: "Đã lưu ảnh vào thư viện ảnh", preferredStyle: .alert)
+                            let okAction = UIAlertAction(title: "Đóng", style: .default)
+                            alert.addAction(okAction)
+                            self?.present(alert, animated: true)
+                        }
+                    }
+                } else {
+                    self?.showRequestPhotosAlert()
+                }
+            }
+        }
+    }
+    
+    func getDataFromUrl(url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            completion(data, response, error)
+            }.resume()
+    }
+}
+
+extension LightboxController: UIAlertViewDelegate {
+    
+    func showRequestPhotosAlert() {
+        DispatchQueue.main.async {
+            let alertController = UIAlertController(title: "Thông báo", message: "Cho phép sử dụng thư viện ảnh để lưu ảnh.", preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: "Huỷ", style: .default) { (action:UIAlertAction) in
+            }
+            let allowAction = UIAlertAction(title: "Cho phép", style: .default) { (action:UIAlertAction) in
+                if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.openURL(settingsUrl)
+                }
+                alertController.dismiss(animated: true, completion: nil)
+            }
+            alertController.addAction(cancelAction)
+            alertController.addAction(allowAction)
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
 }
 
 // MARK: - FooterViewDelegate

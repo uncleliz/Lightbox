@@ -59,7 +59,7 @@ public class LightboxConfig {
   public struct CloseButton {
     public static var enabled = true
     public static var size: CGSize?
-    public static var text = NSLocalizedString("Close", comment: "")
+    public static var text = ""
     public static var image: UIImage?
 
     public static var textAttributes: [NSAttributedString.Key: Any] = [
@@ -74,9 +74,9 @@ public class LightboxConfig {
   }
 
   public struct DeleteButton {
-    public static var enabled = false
+    public static var enabled = true
     public static var size: CGSize?
-    public static var text = NSLocalizedString("Delete", comment: "")
+    public static var text = ""
     public static var image: UIImage?
 
     public static var textAttributes: [NSAttributedString.Key: Any] = [

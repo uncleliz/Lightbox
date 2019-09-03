@@ -48,4 +48,12 @@ open class LightboxImage {
       completion?(nil)
     }
   }
+    
+    public func imageSrcUrl() -> String {
+        return imageURL?.absoluteString ?? ""
+    }
+    
+    public func isVideo() -> Bool {
+        return videoURL != nil
+    }
 }

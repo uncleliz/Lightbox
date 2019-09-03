@@ -59,6 +59,13 @@ open class FooterView: UIView {
   }
 
   func updatePage(_ page: Int, _ numberOfPages: Int) {
+    if page == 1 && numberOfPages == 1 {
+        pageLabel.isHidden = true
+    }
+    else {
+        pageLabel.isHidden = false
+    }
+    
     let text = "\(page)/\(numberOfPages)"
 
     pageLabel.attributedText = NSAttributedString(string: text,
@@ -93,12 +100,15 @@ open class FooterView: UIView {
       )
     }
 
-    separatorView.frame = CGRect(
-      x: 0,
-      y: pageLabel.frame.minY - 2.5,
-      width: frame.width,
-      height: 0.5
-    )
+    separatorView.frame = .zero
+    separatorView.isHidden = true
+    
+//    separatorView.frame = CGRect(
+//      x: 0,
+//      y: pageLabel.frame.minY - 2.5,
+//      width: frame.width,
+//      height: 0.5
+//    )
 
     infoLabel.frame.origin.y = separatorView.frame.minY - infoLabel.frame.height - 15
 

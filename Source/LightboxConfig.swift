@@ -104,6 +104,6 @@ public class LightboxConfig {
 
   public struct Zoom {
     public static var minimumScale: CGFloat = 1.0
-    public static var maximumScale: CGFloat = 3.0
+    public static var maximumScale: CGFloat = 2.25
   }
 }

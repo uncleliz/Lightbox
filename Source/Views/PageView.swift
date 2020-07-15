@@ -1,4 +1,6 @@
 import UIKit
+import Nuke
+import FLAnimatedImage
 
 protocol PageViewDelegate: class {
 
@@ -10,14 +12,14 @@ protocol PageViewDelegate: class {
 
 class PageView: UIScrollView {
 
-  lazy var imageView: UIImageView = {
-    let imageView = UIImageView()
-    imageView.contentMode = .scaleAspectFit
-    imageView.clipsToBounds = true
-    imageView.isUserInteractionEnabled = true
-
-    return imageView
-  }()
+    lazy var imageView: FLAnimatedImageView = {
+        let imgvAnimated = FLAnimatedImageView()
+        imgvAnimated.backgroundColor = .clear
+        imgvAnimated.contentMode = .scaleAspectFit
+        imgvAnimated.clipsToBounds = true
+        imgvAnimated.isUserInteractionEnabled = true
+        return imgvAnimated
+    }()
 
   lazy var playButton: UIButton = {
     let button = UIButton(type: .custom)
@@ -62,7 +64,6 @@ class PageView: UIScrollView {
 
   func configure() {
     addSubview(imageView)
-
     updatePlayButton()
 
     addSubview(loadingIndicator)
@@ -103,21 +104,34 @@ class PageView: UIScrollView {
   // MARK: - Fetch
   private func fetchImage () {
     loadingIndicator.alpha = 1
+    if image.imageType == .gif, let imageURL = image.imageURL {
+        ImagePipeline.Configuration.isAnimatedImageDataEnabled = true
+        Nuke.loadImage(with: imageURL, into: imageView) {[weak self] (imageResponse, error) in
+            guard let self = self else {
+              return
+            }
+            self.handleFetchImage(imageResponse?.image)
+        }
+        return
+    }
+    
     self.image.addImageTo(imageView) { [weak self] image in
       guard let self = self else {
         return
       }
-
-      self.isUserInteractionEnabled = true
-      self.configureImageView()
-      self.pageViewDelegate?.remoteImageDidLoad(image, imageView: self.imageView)
-
-      UIView.animate(withDuration: 0.4) {
-        self.loadingIndicator.alpha = 0
-      }
+        self.handleFetchImage(image)
     }
   }
 
+    private func handleFetchImage(_ image: UIImage?) {
+        self.isUserInteractionEnabled = true
+        self.configureImageView()
+        self.pageViewDelegate?.remoteImageDidLoad(image, imageView: self.imageView)
+        
+        UIView.animate(withDuration: 0.4) {
+            self.loadingIndicator.alpha = 0
+        }
+    }
   // MARK: - Recognizers
 
   @objc func scrollViewDoubleTapped(_ recognizer: UITapGestureRecognizer) {

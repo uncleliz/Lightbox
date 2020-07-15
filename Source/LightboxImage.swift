@@ -1,11 +1,17 @@
 import UIKit
 import Imaginary
 
+public enum LightboxImageType {
+    case normal
+    case gif
+}
+
 open class LightboxImage {
 
   open fileprivate(set) var image: UIImage?
   open fileprivate(set) var imageURL: URL?
   open fileprivate(set) var videoURL: URL?
+  open fileprivate(set) var imageType: LightboxImageType?
   open fileprivate(set) var imageClosure: (() -> UIImage)?
   open var text: String
 
@@ -15,22 +21,25 @@ open class LightboxImage {
     self.text = text
   }
 
-  public init(image: UIImage, text: String = "", videoURL: URL? = nil) {
+  public init(image: UIImage, text: String = "", videoURL: URL? = nil, imageType: LightboxImageType? = nil) {
     self.image = image
     self.text = text
     self.videoURL = videoURL
+    self.imageType = imageType
   }
 
-  public init(imageURL: URL, text: String = "", videoURL: URL? = nil) {
+  public init(imageURL: URL, text: String = "", videoURL: URL? = nil, imageType: LightboxImageType? = nil) {
     self.imageURL = imageURL
     self.text = text
     self.videoURL = videoURL
+    self.imageType = imageType
   }
 
-  public init(imageClosure: @escaping () -> UIImage, text: String = "", videoURL: URL? = nil) {
+  public init(imageClosure: @escaping () -> UIImage, text: String = "", videoURL: URL? = nil, imageType: LightboxImageType? = nil) {
     self.imageClosure = imageClosure
     self.text = text
     self.videoURL = videoURL
+    self.imageType = imageType
   }
 
   open func addImageTo(_ imageView: UIImageView, completion: ((UIImage?) -> Void)? = nil) {

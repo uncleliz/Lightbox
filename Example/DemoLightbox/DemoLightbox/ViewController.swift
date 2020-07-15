@@ -27,7 +27,7 @@ class ViewController: UIViewController {
   
   @objc func showLightbox() {
     let images = [
-      LightboxImage(imageURL: URL(string: "https://cdn.arstechnica.net/2011/10/05/iphone4s_sample_apple-4e8c706-intro.jpg")!),
+        LightboxImage(imageURL: URL(string: "https://image-3.gapo.vn/images/df6d9edc-933c-4870-817d-5cad0f6b06d8.gif")!, imageType: .gif),
       LightboxImage(
         image: UIImage(named: "photo1")!,
         text: "Photography is the science, art, application and practice of creating durable images by recording light or other electromagnetic radiation, either electronically by means of an image sensor, or chemically by means of a light-sensitive material such as photographic film"
@@ -45,7 +45,8 @@ class ViewController: UIViewController {
     
     let controller = LightboxController(images: images)
     controller.dynamicBackground = true
-    
+    controller.modalPresentationStyle = .fullScreen
+
     present(controller, animated: true, completion: nil)
   }
 }

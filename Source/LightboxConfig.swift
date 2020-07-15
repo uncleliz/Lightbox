@@ -2,6 +2,7 @@ import UIKit
 import AVKit
 import AVFoundation
 import Imaginary
+import Nuke
 
 public class LightboxConfig {
   /// Whether to show status bar while Lightbox is presented

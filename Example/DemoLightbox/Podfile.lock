@@ -1,17 +1,26 @@
 PODS:
   - Cache (5.2.0)
+  - FLAnimatedImage (1.0.12)
   - Imaginary (4.2.0):
     - Cache (~> 5.0)
   - Lightbox (2.3.0):
     - Imaginary (~> 4.0)
+    - Nuke-FLAnimatedImage-Plugin
+  - Nuke (7.5.2)
+  - Nuke-FLAnimatedImage-Plugin (6.0):
+    - FLAnimatedImage (~> 1.0)
+    - Nuke (~> 7.5)
 
 DEPENDENCIES:
   - Lightbox (from `../../`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - Cache
+    - FLAnimatedImage
     - Imaginary
+    - Nuke
+    - Nuke-FLAnimatedImage-Plugin
 
 EXTERNAL SOURCES:
   Lightbox:
@@ -19,9 +28,12 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Cache: 807c5d86d01a177f06ede9865add3aea269bbfd4
+  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Imaginary: dae33d06dbc2ada22f98afef5eb45cc061311a2c
-  Lightbox: d317750e4132bfb871a5307cfe0a2c7d6a583c65
+  Lightbox: 3c4c4637dc0489268978f38a6db3ef110596e9e5
+  Nuke: 0350d346a688426e8f2331253ef28dc2fc4f6178
+  Nuke-FLAnimatedImage-Plugin: e4c39d13061a08ac0bdcb0cd7a23882f4a43f4a6
 
 PODFILE CHECKSUM: 408ae3477507a1d4b7ff06ffb3f162eda443424f
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.9.1

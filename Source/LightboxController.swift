@@ -489,15 +489,22 @@ extension LightboxController: HeaderViewDelegate {
                     
                     self?.getDataFromUrl(url: yourImageURL) { (data, response, error) in
                         
-                        guard let data = data, let imageFromData = UIImage(data: data) else { return }
+                        guard let data = data else { return }
                         
-                        DispatchQueue.main.async() { [weak self] in
-                            UIImageWriteToSavedPhotosAlbum(imageFromData, nil, nil, nil)
-                            
-                            let alert = UIAlertController(title: "Tải thành công", message: "Đã lưu ảnh vào thư viện ảnh", preferredStyle: .alert)
-                            let okAction = UIAlertAction(title: "Đóng", style: .default)
-                            alert.addAction(okAction)
-                            self?.present(alert, animated: true)
+                        PHPhotoLibrary.shared().performChanges({
+                            let request = PHAssetCreationRequest.forAsset()
+                            request.addResource(with: .photo, data: data, options: nil)
+                        }) { (success, error) in
+                            if let error = error {
+                                print(error.localizedDescription)
+                            } else {
+                                DispatchQueue.main.async() { [weak self] in
+                                    let alert = UIAlertController(title: "Tải thành công", message: "Đã lưu ảnh vào thư viện ảnh", preferredStyle: .alert)
+                                    let okAction = UIAlertAction(title: "Đóng", style: .default)
+                                    alert.addAction(okAction)
+                                    self?.present(alert, animated: true)
+                                }
+                            }
                         }
                     }
                 } else {

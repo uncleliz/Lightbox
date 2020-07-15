@@ -24,6 +24,8 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Sử dụng thư viện ảnh để chọn ảnh thay ảnh đại diện, ảnh bìa, đăng bài lên dòng thời gian</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
